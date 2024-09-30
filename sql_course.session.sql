@@ -253,11 +253,41 @@ ORDER BY
 /* 
 Identify the top 5 skills that are most frequently mentioned in
 job postings.
-- Use a subquery to fint the skill IDs with the highest counts in the
+- Use a subquery to find the skill IDs with the highest counts in the
 skills_job_dim table
 - join this result with the skills_dim table to get the skill names
+*/
 
-Question 2
+
+WITH frequently_mentioned_skills AS 
+                (
+            SELECT 
+                job_title_short,
+                skill_id,
+                COUNT(*) AS times_mentioned
+            FROM
+                skills_job_dim sjd
+            INNER JOIN job_postings_fact jpf ON jpf.job_id = sjd.job_id
+            WHERE job_title_short = 'Data Analyst'
+            GROUP BY
+                    job_title_short, skill_id
+            ORDER BY
+                times_mentioned DESC
+                )
+
+SELECT 
+            job_title_short,
+            sd.skills,
+            times_mentioned
+FROM
+            frequently_mentioned_skills fms
+INNER JOIN  skills_dim sd ON sd.skill_id = fms.skill_id 
+ORDER BY
+            fms.times_mentioned DESC
+LIMIT 5;
+
+
+/*Question 2
 Determine the size category('Small', 'Meduim' or 'Large') for each
 company by first identifying the number of job postings they have. Use
 a sub query to calculate the total job postings per company. A company is
@@ -265,8 +295,38 @@ considered 'small' if it has less than 10 job postings, 'Meduim'
 if the number of job postings is between 10 and 50, and Large if it has more 
 than 50 job postings. Implement a subquery to aggregate job counts per company before 
 classifying them based on size.
+*/
 
-Practice Problem 7
+SELECT 
+    company_id,
+    COUNT(*)
+FROM 
+    job_postings_fact
+GROUP BY
+    company_id
+
+SELECT 
+    name AS company_name
+FROM 
+    company_dim
+WHERE 
+    company_id IN (
+
+        
+    )
+
+
+
+
+
+
+
+
+
+
+
+
+/*Practice Problem 7
 Find the count of the number of remote job postings per skills
 --Display the top 5 skills by their demand in remote jobs
 --Include skill ID, name, and count of postings requiring the skill
@@ -360,6 +420,32 @@ ORDER BY
 
 
 
+
+
+
+
+
+
+
+
+
+SELECT 
+    company_id,
+    COUNT(*)
+FROM 
+    job_postings_fact
+GROUP BY
+    company_id
+
+SELECT 
+    name AS company_name
+FROM 
+    company_dim
+WHERE 
+    company_id IN (
+
+        
+    )
 
 
 
